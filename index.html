@@ -39,6 +39,68 @@
     <footer>
       <p>Powered by Semantic Scholar</p>
     </footer>
+    <!-- popup that shows the AI summary -->
+    <div
+      id="summaryModal"
+      style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      <div
+        style="
+          background: white;
+          padding: 30px;
+          max-width: 600px;
+          width: 100%;
+          max-height: 80vh;
+          overflow-y: auto;
+          border-radius: 6px;
+          position: relative;
+        "
+      >
+        <button
+          id="closeModal"
+          style="
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+          "
+        >
+          &#x2715;
+        </button>
+        <h2 id="modalPaperTitle" style="margin-bottom: 10px"></h2>
+        <span
+          id="modalTag"
+          style="
+            background: #2c6e49;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+          "
+        ></span>
+        <div
+          id="modalSummaryText"
+          style="
+            margin-top: 15px;
+            font-size: 15px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+          "
+        ></div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

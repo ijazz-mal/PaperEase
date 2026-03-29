@@ -13,6 +13,13 @@ const yearFrom = document.getElementById('yearFrom');
 const sortBy = document.getElementById('sortBy');
 const paperCount = document.getElementById('paperCount');
 
+// modal elements
+const summaryModal = document.getElementById('summaryModal');
+const closeModal = document.getElementById('closeModal');
+const modalPaperTitle = document.getElementById('modalPaperTitle');
+const modalTag = document.getElementById('modalTag');
+const modalSummaryText = document.getElementById('modalSummaryText');
+
 // store results so we can filter without searching again
 let fetchedPapers = [];
 
@@ -25,6 +32,15 @@ searchBox.addEventListener('keydown', function (e) {
 // re-render when user changes filters
 yearFrom.addEventListener('input', renderFilteredPapers);
 sortBy.addEventListener('change', renderFilteredPapers);
+
+closeModal.addEventListener('click', function () {
+  summaryModal.style.display = 'none';
+});
+
+// also close if user clicks the dark background
+summaryModal.addEventListener('click', function (e) {
+  if (e.target === summaryModal) summaryModal.style.display = 'none';
+});
 
 async function handleSearch() {
   const query = searchBox.value.trim();
@@ -132,6 +148,9 @@ function buildPaperCard(paper, index) {
     link = 'https://doi.org/' + paper.externalIds.DOI;
   }
 
+  const safeTitle = escapeAttr(paper.title || '');
+  const safeAbstract = escapeAttr(paper.abstract || '');
+
   card.innerHTML =
     '<h2 class="paper-title"><a href="' +
     link +
@@ -152,8 +171,80 @@ function buildPaperCard(paper, index) {
     '<span class="tag">' +
     citations.toLocaleString() +
     ' citations</span>' +
-    '<button class="explain-btn">Explain this paper</button>' +
+    '<button class="explain-btn" onclick="getSummary(this, \'' +
+    safeTitle +
+    "', '" +
+    safeAbstract +
+    '\')">Explain this paper</button>' +
     '</div>';
-
   return card;
+}
+
+async function getSummary(btn, title, abstract) {
+  if (!abstract) {
+    openModal(title, 'Note', 'No abstract available for this paper.');
+    return;
+  }
+
+  btn.textContent = 'Loading...';
+  btn.disabled = true;
+
+  // prompt tells the AI exactly how we want the summary structured
+  const prompt =
+    'You are helping a university student understand a research paper.\n\n' +
+    'Title: "' +
+    title +
+    '"\n' +
+    'Abstract: "' +
+    abstract +
+    '"\n\n' +
+    'Explain in plain English using this structure:\n\n' +
+    'What is this paper about?\n' +
+    'What problem does it solve?\n' +
+    'What did they do?\n' +
+    'What did they find?\n' +
+    'Why does it matter?\n\n' +
+    'No jargon. Write for a student reading their first research paper.';
+
+  try {
+    // calling groq directly for now - will move to proxy later
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer YOUR_GROQ_KEY_HERE',
+      },
+      body: JSON.stringify({
+        model: 'llama3-8b-8192',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+
+    if (!res.ok) {
+      const errData = await res.json();
+      throw new Error(errData.error?.message || 'Request failed');
+    }
+
+    const data = await res.json();
+    openModal(title, 'Plain English Summary', data.choices[0].message.content);
+  } catch (err) {
+    openModal(title, 'Error', 'Could not generate summary: ' + err.message);
+  }
+
+  btn.textContent = 'Explain this paper';
+  btn.disabled = false;
+}
+
+function openModal(title, tag, text) {
+  modalPaperTitle.textContent = title;
+  modalTag.textContent = tag;
+  modalSummaryText.textContent = text;
+  summaryModal.style.display = 'flex';
+}
+
+// basic escaping so titles and abstracts don't break the onclick attribute
+function escapeAttr(str) {
+  if (!str) return '';
+  return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\r?\n/g, ' ');
 }
