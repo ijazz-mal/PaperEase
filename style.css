@@ -1,0 +1,39 @@
+/* basic styles - first pass */
+
+body {
+  font-family: Georgia, serif;
+  background: #f5f0e8;
+  color: #1a1209;
+  padding: 20px;
+}
+
+header {
+  margin-bottom: 20px;
+}
+
+#searchBox {
+  padding: 8px;
+  font-size: 16px;
+  width: 60%;
+}
+
+#searchBtn {
+  padding: 8px 14px;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+#errorText {
+  color: red;
+  margin-top: 8px;
+}
+
+#paperList {
+  margin-top: 20px;
+}
+
+footer {
+  margin-top: 30px;
+  font-size: 14px;
+  color: gray;
+}
