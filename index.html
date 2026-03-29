@@ -15,6 +15,23 @@
     <main>
       <input type="text" id="searchBox" placeholder="Search for a topic..." />
       <button id="searchBtn">Search</button>
+      <div id="filterBar">
+        <label
+          >Year from: <input type="number" id="yearFrom" placeholder="2015"
+        /></label>
+        <label
+          >Sort by:
+          <select id="sortBy">
+            <option value="relevance">Relevance</option>
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="citations">Most Cited</option>
+          </select>
+        </label>
+        <span id="paperCount"></span>
+      </div>
+
+      <div id="loadingSpinner">Loading...</div>
       <p id="errorText"></p>
       <div id="paperList"></div>
     </main>
