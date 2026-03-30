@@ -56,9 +56,10 @@ async function handleSearch() {
   fetchedPapers = [];
 
   try {
-    // semantic scholar gives us free access to millions of papers
+    // was getting CORS errors calling semantic scholar directly from browser
+    // nginx proxies /papers to the API instead
     const url =
-      'https://api.semanticscholar.org/graph/v1/paper/search' +
+      '/papers' +
       '?query=' +
       encodeURIComponent(query) +
       '&limit=20' +
@@ -207,12 +208,12 @@ async function getSummary(btn, title, abstract) {
     'No jargon. Write for a student reading their first research paper.';
 
   try {
-    // calling groq directly for now - will move to proxy later
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    // moved to proxy - nginx forwards /summarise to groq with the API key
+    // this way the key never ends up in the browser
+    const res = await fetch('/summarise', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer YOUR_GROQ_KEY_HERE',
       },
       body: JSON.stringify({
         model: 'llama3-8b-8192',
