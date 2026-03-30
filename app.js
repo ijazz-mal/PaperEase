@@ -216,7 +216,8 @@ async function getSummary(btn, title, abstract) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama3-8b-8192',
+        // llama3-8b-8192 was deprecated, switching to the newer model
+        model: 'llama-3.3-70b-versatile',
         max_tokens: 1000,
         messages: [{ role: 'user', content: prompt }],
       }),
