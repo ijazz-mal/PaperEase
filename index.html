@@ -3,104 +3,89 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
     <title>PaperEase</title>
+    <!-- switched to proper fonts, georgia wasn't cutting it -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <header>
-      <h1>PaperEase</h1>
-      <p>Research papers, explained simply.</p>
+    <header class="navbar">
+      <div class="brand">Paper<span>Ease</span></div>
+      <p class="brand-sub">Research papers, explained simply.</p>
     </header>
 
-    <main>
-      <input type="text" id="searchBox" placeholder="Search for a topic..." />
-      <button id="searchBtn">Search</button>
-      <div id="filterBar">
-        <label
-          >Year from: <input type="number" id="yearFrom" placeholder="2015"
-        /></label>
-        <label
-          >Sort by:
-          <select id="sortBy">
-            <option value="relevance">Relevance</option>
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
-            <option value="citations">Most Cited</option>
-          </select>
-        </label>
-        <span id="paperCount"></span>
+    <section class="hero-section">
+      <h1>Understand any research paper,<br /><em>instantly.</em></h1>
+      <p class="hero-sub">
+        Type a topic below. We'll fetch real academic papers and explain them in
+        plain English.
+      </p>
+
+      <div class="search-wrapper">
+        <input
+          type="text"
+          id="searchBox"
+          placeholder="e.g. climate change in Africa, machine learning in healthcare..."
+        />
+        <button id="searchBtn">Search Papers</button>
       </div>
 
-      <div id="loadingSpinner">Loading...</div>
-      <p id="errorText"></p>
-      <div id="paperList"></div>
-    </main>
+      <p id="errorText" class="error-msg"></p>
+    </section>
 
-    <footer>
-      <p>Powered by Semantic Scholar</p>
-    </footer>
-    <!-- popup that shows the AI summary -->
-    <div
-      id="summaryModal"
-      style="
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.6);
-        align-items: center;
-        justify-content: center;
-      "
-    >
-      <div
-        style="
-          background: white;
-          padding: 30px;
-          max-width: 600px;
-          width: 100%;
-          max-height: 80vh;
-          overflow-y: auto;
-          border-radius: 6px;
-          position: relative;
-        "
-      >
-        <button
-          id="closeModal"
-          style="
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-          "
-        >
-          &#x2715;
-        </button>
-        <h2 id="modalPaperTitle" style="margin-bottom: 10px"></h2>
-        <span
-          id="modalTag"
-          style="
-            background: #2c6e49;
-            color: white;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-          "
-        ></span>
-        <div
-          id="modalSummaryText"
-          style="
-            margin-top: 15px;
-            font-size: 15px;
-            line-height: 1.7;
-            white-space: pre-wrap;
-          "
-        ></div>
+    <section id="filterBar" class="filter-bar hidden">
+      <div class="filter-item">
+        <label for="yearFrom">Year from:</label>
+        <input
+          type="number"
+          id="yearFrom"
+          placeholder="e.g. 2015"
+          min="1900"
+          max="2025"
+        />
+      </div>
+      <div class="filter-item">
+        <label for="sortBy">Sort by:</label>
+        <select id="sortBy">
+          <option value="relevance">Relevance</option>
+          <option value="newest">Year (Newest)</option>
+          <option value="oldest">Year (Oldest)</option>
+          <option value="citations">Most Cited</option>
+        </select>
+      </div>
+      <p id="paperCount" class="paper-count"></p>
+    </section>
+
+    <main id="paperList" class="paper-list"></main>
+
+    <div id="loadingSpinner" class="loading-spinner hidden">
+      <div class="spinner-ring"></div>
+      <p>Fetching papers...</p>
+    </div>
+
+    <!-- popup for the AI summary -->
+    <div id="summaryModal" class="modal-bg hidden">
+      <div class="modal-content">
+        <button id="closeModal" class="close-btn">&#x2715;</button>
+        <h2 id="modalPaperTitle"></h2>
+        <span id="modalTag" class="modal-tag"></span>
+        <div id="modalSummaryText" class="summary-text"></div>
       </div>
     </div>
 
-    <script src="app.js"></script>
+    <footer class="site-footer">
+      <p>
+        Data from
+        <a href="https://api.semanticscholar.org/" target="_blank"
+          >Semantic Scholar</a
+        >. Summaries powered by
+        <a href="https://groq.com" target="_blank">Groq (Llama 3)</a>.
+      </p>
+    </footer>
+
     <script src="app.js"></script>
   </body>
 </html>

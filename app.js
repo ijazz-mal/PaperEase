@@ -34,12 +34,12 @@ yearFrom.addEventListener('input', renderFilteredPapers);
 sortBy.addEventListener('change', renderFilteredPapers);
 
 closeModal.addEventListener('click', function () {
-  summaryModal.style.display = 'none';
+  summaryModal.classList.add('hidden');
 });
 
 // also close if user clicks the dark background
 summaryModal.addEventListener('click', function (e) {
-  if (e.target === summaryModal) summaryModal.style.display = 'none';
+  if (e.target === summaryModal) summaryModal.classList.add('hidden');
 });
 
 async function handleSearch() {
@@ -51,7 +51,7 @@ async function handleSearch() {
   }
 
   errorText.textContent = '';
-  loadingSpinner.style.display = 'block';
+  loadingSpinner.classList.remove('hidden');
   paperList.innerHTML = '';
   fetchedPapers = [];
 
@@ -73,15 +73,15 @@ async function handleSearch() {
 
     if (fetchedPapers.length === 0) {
       errorText.textContent = 'No papers found. Try different keywords.';
-      loadingSpinner.style.display = 'none';
+      loadingSpinner.classList.add('hidden');
       return;
     }
 
-    loadingSpinner.style.display = 'none';
-    filterBar.style.display = 'flex';
+    loadingSpinner.classList.add('hidden');
+    filterBar.classList.remove('hidden');
     renderFilteredPapers();
   } catch (err) {
-    loadingSpinner.style.display = 'none';
+    loadingSpinner.classList.add('hidden');
     errorText.textContent = 'Something went wrong: ' + err.message;
   }
 }
@@ -242,7 +242,7 @@ function openModal(title, tag, text) {
   modalPaperTitle.textContent = title;
   modalTag.textContent = tag;
   modalSummaryText.textContent = text;
-  summaryModal.style.display = 'flex';
+  summaryModal.classList.remove('hidden');
 }
 
 // basic escaping so titles and abstracts don't break the onclick attribute
