@@ -4,7 +4,7 @@ A web app that fetches real academic papers and explains them in plain English u
 
 ## Live Demo
 
-http://paperease.maljazz.tech/
+https://paperease.maljazz.tech/
 
 ## What it does
 
