@@ -286,7 +286,14 @@ async function getSummary(btn, title, abstract) {
 function openModal(title, tag, text) {
   modalPaperTitle.textContent = title;
   modalTag.textContent = tag;
-  modalSummaryText.textContent = text;
+
+  // convert basic markdown to HTML
+  // handles **bold**, newlines
+  const formatted = text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // **bold**
+    .replace(/\n/g, '<br/>'); // line breaks
+
+  modalSummaryText.innerHTML = formatted;
   summaryModal.classList.remove('hidden');
 }
 
