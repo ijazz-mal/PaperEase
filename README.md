@@ -22,7 +22,7 @@ https://paperease.maljazz.tech/
 
 ## How to run locally
 
-Since this is a web app it can be accessed directly at http://paperease.maljazz.tech/
+Since this is a web app it can be accessed directly at https://paperease.maljazz.tech/
 
 To run locally, clone the repo and open `index.html` in a browser:
 
