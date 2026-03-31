@@ -20,6 +20,10 @@ const modalPaperTitle = document.getElementById('modalPaperTitle');
 const modalTag = document.getElementById('modalTag');
 const modalSummaryText = document.getElementById('modalSummaryText');
 
+// simple cache so same search doesn't hit the API twice in one session
+const searchCache = {};
+const summaryCache = {};
+
 // store results so we can filter without searching again
 let fetchedPapers = [];
 
@@ -42,6 +46,15 @@ summaryModal.addEventListener('click', function (e) {
   if (e.target === summaryModal) summaryModal.classList.add('hidden');
 });
 
+// warn user as they type if something looks suspicious
+searchBox.addEventListener('input', function () {
+  if (/<[^>]*>/.test(searchBox.value)) {
+    errorText.textContent = 'Invalid characters detected.';
+  } else {
+    errorText.textContent = '';
+  }
+});
+
 async function handleSearch() {
   const query = searchBox.value.trim();
 
@@ -50,14 +63,32 @@ async function handleSearch() {
     return;
   }
 
+  // reject if too long or looks like html injection
+  if (query.length > 200) {
+    errorText.textContent = 'Search query is too long.';
+    return;
+  }
+  if (/<[^>]*>/.test(query)) {
+    errorText.textContent = 'Invalid characters in search query.';
+    return;
+  }
+
   errorText.textContent = '';
+
+  // return cached results if we already searched this
+  if (searchCache[query]) {
+    fetchedPapers = searchCache[query];
+    filterBar.classList.remove('hidden');
+    renderFilteredPapers();
+    return;
+  }
+
   loadingSpinner.classList.remove('hidden');
+  filterBar.classList.add('hidden');
   paperList.innerHTML = '';
   fetchedPapers = [];
 
   try {
-    // was getting CORS errors calling semantic scholar directly from browser
-    // nginx proxies /papers to the API instead
     const url =
       '/papers' +
       '?query=' +
@@ -76,6 +107,9 @@ async function handleSearch() {
       loadingSpinner.classList.add('hidden');
       return;
     }
+
+    // save to cache
+    searchCache[query] = fetchedPapers;
 
     loadingSpinner.classList.add('hidden');
     filterBar.classList.remove('hidden');
@@ -187,6 +221,13 @@ async function getSummary(btn, title, abstract) {
     return;
   }
 
+  // check cache first, no need to call groq again for same paper
+  const cacheKey = title.slice(0, 60);
+  if (summaryCache[cacheKey]) {
+    openModal(title, 'Plain English Summary', summaryCache[cacheKey]);
+    return;
+  }
+
   btn.textContent = 'Loading...';
   btn.disabled = true;
 
@@ -208,7 +249,7 @@ async function getSummary(btn, title, abstract) {
     'No jargon. Write for a student reading their first research paper.';
 
   try {
-    // moved to proxy - nginx forwards /summarise to groq with the API key
+    // moved to proxy, nginx forwards /summarise to groq with the API key
     // this way the key never ends up in the browser
     const res = await fetch('/summarise', {
       method: 'POST',
@@ -229,7 +270,11 @@ async function getSummary(btn, title, abstract) {
     }
 
     const data = await res.json();
-    openModal(title, 'Plain English Summary', data.choices[0].message.content);
+    const summary = data.choices[0].message.content;
+
+    // save summary to cache
+    summaryCache[cacheKey] = summary;
+    openModal(title, 'Plain English Summary', summary);
   } catch (err) {
     openModal(title, 'Error', 'Could not generate summary: ' + err.message);
   }
