@@ -2,6 +2,10 @@
 
 A web app that fetches real academic papers and explains them in plain English using AI. Built for students who want to understand research without wading through dense academic language.
 
+## Demonstration Video
+
+https://youtube.com/shorts/-vKnFUyDVvo?si=lZ23LT0b10Vw-MBm
+
 ## Live Demo
 
 https://paperease.maljazz.tech/
